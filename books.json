@@ -1,0 +1,12 @@
+{
+  "booksList": [
+    {
+      "name": "1",
+      "authorName": "1",
+      "genre": "1",
+      "publishDate": "1",
+      "annotation": "1",
+      "isbn": "1"
+    }
+  ]
+}
