@@ -1,3 +1,5 @@
+package client;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import model.Book;
@@ -5,37 +7,41 @@ import model.Response;
 import model.State;
 import model.Task;
 import repository.BookList;
+import server.entity.User;
+import server.socketConnector;
 
 public class ConsoleApp {
 
-    int state = State.IDLE;
+    int state = State.INPUT_USERNAME;
     String currentBy = null;
     Book currentBook = new Book();
     socketConnector client = new socketConnector();
+    User user = new User();
 
 
     private String sendTask(Task task){
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         String message=gson.toJson(task);
-        String response = client.sendMessage(message);
-        //System.out.println(gson.toJson(task));
-        return response;
+        return client.sendMessage(message);
     }
 
     private int addBook() {
-        Task task=new Task("add",this.currentBook);
+        Task task=new Task("add",this.currentBook, this.user);
         String response=this.sendTask(task);
         if (response==null) return -1;
         return 0;
     }
 
     private String getFindCollection(String value) {
-        Task task=new Task("find",this.currentBy,value);
-        String response=this.sendTask(task);
-        return response;
+        Task task=new Task("find",this.currentBy,value, this.user);
+        return this.sendTask(task);
     }
 
+    private String login(){
+        Task task = new Task("login", this.user);
+        return this.sendTask(task);
+    }
 
     private void handleIdle(String input) {
         this.currentBy = null;
@@ -166,11 +172,33 @@ public class ConsoleApp {
         }
     }
 
+    private void handleInputUsername(String input) {
+        switch (input) {
+            case ("EXIT") -> this.state=State.IDLE;
+            default -> {
+                this.user.setUsername(input);
+                this.state=State.INPUT_PASSWORD;
+            }
+        }
+    }
+
+
+    private void handleInputPassword(String input) {
+        switch (input) {
+            case ("EXIT") -> this.state=State.IDLE;
+            default -> {
+                this.user.setPassword(input);
+                this.state=State.IDLE;
+                String result = this.login();
+                System.out.println(result);
+            }
+        }
+    }
+
+
 
 
     public void handle(String input) {
-        //System.out.println("state=");
-        //System.out.println(this.state);
         switch (this.state) {
             case (State.IDLE) -> this.handleIdle(input);
             case (State.INPUT_NAME) -> this.handleInputName(input);
@@ -180,6 +208,8 @@ public class ConsoleApp {
             case (State.INPUT_ANNOTATION) -> this.handleInputAnnotation(input);
             case (State.INPUT_ISBN) -> this.handleInputIsbn(input);
             case (State.FIND) -> this.handleFind(input);
+            case (State.INPUT_USERNAME) -> this.handleInputUsername(input);
+            case (State.INPUT_PASSWORD) -> this.handleInputPassword(input);
             case (State.FIND_VALUE) -> this.handleFindValue(input);
             case (State.EXIT) -> this.handleExit(input);
             default -> throw new IllegalStateException("Unexpected value: " + this.state);
@@ -194,6 +224,8 @@ public class ConsoleApp {
             case (State.INPUT_AUTHORNAME) -> System.out.println("Введите имя автора\nEXIT - выход в главное меню");
             case (State.INPUT_GENRE) -> System.out.println("Введите жанр\nEXIT - выход в главное меню");
             case (State.INPUT_PUBLISHDATE) -> System.out.println("Введите дату публикации\nEXIT - выход в главное меню");
+            case (State.INPUT_USERNAME) -> System.out.println("Введите имя пользователя\n");
+            case (State.INPUT_PASSWORD) -> System.out.println("Введите пароль\n");
             case (State.INPUT_ISBN) -> System.out.println("Введите isbn\nEXIT - выход в главное меню");
             case (State.INPUT_ANNOTATION) -> System.out.println("Введите аннотацию\nEXIT - выход в главное меню");
             case (State.FIND) -> System.out.println("1 - поиск по названию\n2 - поиск по имени автора\n3 - поиск по isbn\n4 - поиск по ключевым словам\nEXIT  - выход в главное меню");

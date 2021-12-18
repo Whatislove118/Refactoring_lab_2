@@ -1,3 +1,5 @@
+package client;
+
 import model.State;
 
 import java.util.Scanner;
@@ -10,7 +12,6 @@ public class Client {
         while(scanner.hasNext()){
             app.handle(scanner.next());
             app.print();
-            System.out.print("> ");
 
         }
     }

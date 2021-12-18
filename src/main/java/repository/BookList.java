@@ -78,25 +78,8 @@ public class BookList {
 
 
         return new BookList(sortedBooksList);
-        };
-//            Book selectedBook=null;
-//            for (int j=0;j<=5;j++){
-//                booksList[j].
-//
-//            }
-//            sortedBooksList.add(selectedBook)
-          //  return booksList;
-        //}
-
-
-
-       // arrayList.sort((p1, p2) -> p1.compareTo(p2));;
-
-
-
-    public void addBook(Book book){
-        booksList.add(book);
-    }
+        }
+        
 
 
     @Override

@@ -29,6 +29,6 @@ o выводадекватныхипонятныхпользователюсоо
 
 ### Инструкция по запуску:
 
-* run Server.main()
-* run Client.main()
+* run server.Server.main()
+* run client.Client.main()
 * enjoy!
